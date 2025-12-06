@@ -55,7 +55,7 @@ const SignIn: React.FC = () => {
             }
         } catch (err: any) {
             alert("Login failed. Redirecting to signup.");
-            navigate("/signup"); // redirect on any error
+            navigate("/signup-step1"); // redirect on any error
         }
     };
 
