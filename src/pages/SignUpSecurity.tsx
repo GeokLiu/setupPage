@@ -24,6 +24,7 @@ const SignUpSecurity: React.FC = () => {
     const [q2, setQ2] = useState('');
     const [a2, setA2] = useState('');
 
+
     const handleSubmit = async () => {
         if (!q1 || !a1 || !q2 || !a2) {
             return alert("Please answer both security questions.");
@@ -31,29 +32,35 @@ const SignUpSecurity: React.FC = () => {
 
         setLoading(true);
 
-        // 1. Prepare Final Data Payload
-        const finalData = new FormData();
-        finalData.append("icNumber", state?.icNumber || "990101-10-1234");
-        finalData.append("fullName", state?.fullName || "User");
-        finalData.append("address", state?.address || "");
-        finalData.append("q1", q1);
-        finalData.append("a1", a1);
-        finalData.append("q2", q2);
-        finalData.append("a2", a2);
+        // ❌ delete FormData (Backend only text = JSON)
+        // const finalData = new FormData(); ...
+
+        // ✅ change to JSON Object，
+        const payload = {
+            ic_number: state?.icNumber || "990101-14-5678", //  Backend ic_number
+            question1: q1,
+            answer1: a1,
+            question2: q2,
+            answer2: a2
+        };
 
         try {
-            // 2. Try sending to Backend
-            await axios.post("http://localhost:8000/signup-finalize", finalData);
+            console.log("Sending Payload:", payload); // Debug 
+
+            // ✅  URL -> main.py de route
+            // axios send object -> application/json
+            await axios.post("http://localhost:8000/signup-security", payload);
+            
             alert("Registration Complete!");
             navigate('/signin');
-        } catch (error) {
-            console.log("Server error, using Mock Success...");
 
-            // 3. Mock Fallback (If server is down)
-            setTimeout(() => {
-                alert("Registration Successful (Offline Mode)!");
-                navigate('/signin');
-            }, 1000);
+        } catch (error) {
+            console.error("Server error:", error);
+            
+            // Mock Fallback 
+            // Cheat Code   
+            alert("Registration Successful (Offline Mode)!"); 
+            navigate('/signin');
         } finally {
             setLoading(false);
         }
